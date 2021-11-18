@@ -9,6 +9,7 @@ import {
     getSolletExtensionWallet,
     getSolletWallet,
     getTorusWallet,
+    getCloverWallet
 } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
 import React, { FC, useCallback, useMemo } from 'react';
@@ -25,11 +26,12 @@ export const Wallet: FC = () => {
     const wallets = useMemo(
         () => [
             getPhantomWallet(),
-            getSlopeWallet(),
-            getSolflareWallet(),
             getTorusWallet({
                 options: { clientId: 'Get a client ID @ https://developer.tor.us' },
             }),
+            getCloverWallet(),
+            getSlopeWallet(),
+            getSolflareWallet(),
             getLedgerWallet(),
             getSolletWallet({ network }),
             getSolletExtensionWallet({ network }),

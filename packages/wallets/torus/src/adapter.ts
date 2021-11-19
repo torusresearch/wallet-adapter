@@ -1,5 +1,6 @@
 import {
     BaseMessageSignerWalletAdapter,
+    BaseSignerWalletAdapter,
     EventEmitter,
     pollUntilReady,
     WalletAccountError,
@@ -17,27 +18,32 @@ import {
 import { PublicKey, Transaction, Message, Cluster } from '@solana/web3.js';
 import Torus, { TorusParams } from '@toruslabs/solana-embed';
 
-export type { TorusParams } from '@toruslabs/solana-embed';
-
+export interface TorusWalletAdapterConfig {
+    torusParams?: TorusParams;
+    // network?: WalletAdapterNetwork;
+    pollInterval?: number;
+    pollCount?: number;
+}
 interface TorusWindow extends Window {
     torus: Torus;
 }
 
 declare const window: TorusWindow;
 
-export class TorusWalletAdapter extends BaseMessageSignerWalletAdapter {
+export class TorusWalletAdapter extends BaseSignerWalletAdapter {
     private _connecting: boolean;
     private _torus: Torus | null;
     private _publicKey: PublicKey | null;
     private _config: TorusParams;
 
-    constructor(config: TorusParams) {
+    constructor(config: TorusWalletAdapterConfig) {
         super();
         this._connecting = false;
         this._torus = null;
         this._publicKey = null;
-        this._config = config;
+        this._config = config.torusParams || {};
         // if (!this.ready) pollUntilReady(this, config.pollInterval || 1000, config.pollCount || 3);
+        // this.ready = true;
     }
 
     get publicKey(): PublicKey | null {
@@ -45,7 +51,8 @@ export class TorusWalletAdapter extends BaseMessageSignerWalletAdapter {
     }
 
     get ready(): boolean {
-        return typeof window !== 'undefined' && !!window.torus;
+        // return typeof window !== 'undefined' && !!window.torus;
+        return typeof window !== 'undefined' 
     }
 
     get connecting(): boolean {

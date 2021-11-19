@@ -1,42 +1,51 @@
 import {
-    BaseSignerWalletAdapter,
+    BaseMessageSignerWalletAdapter,
+    EventEmitter,
+    pollUntilReady,
+    WalletAccountError,
     WalletConnectionError,
+    WalletDisconnectedError,
     WalletDisconnectionError,
     WalletError,
-    WalletKeypairError,
     WalletNotConnectedError,
+    WalletNotFoundError,
+    WalletNotInstalledError,
+    WalletPublicKeyError,
     WalletSignTransactionError,
-    WalletWindowBlockedError,
     WalletWindowClosedError,
 } from '@solana/wallet-adapter-base';
-import { Keypair, PublicKey, Transaction } from '@solana/web3.js';
-import OpenLogin, { OPENLOGIN_NETWORK, OpenLoginOptions } from '@toruslabs/openlogin';
-import { getED25519Key } from '@toruslabs/openlogin-ed25519';
+import { PublicKey, Transaction, Message, Cluster } from '@solana/web3.js';
+import Torus, { TorusParams } from '@toruslabs/solana-embed';
 
-export interface TorusWalletAdapterConfig {
-    options: Partial<OpenLoginOptions> & Omit<OpenLoginOptions, 'network'>;
+export type { TorusParams } from '@toruslabs/solana-embed';
+
+interface TorusWindow extends Window {
+    torus: Torus;
 }
 
-export class TorusWalletAdapter extends BaseSignerWalletAdapter {
-    private _options: OpenLoginOptions;
-    private _connecting: boolean;
-    private _openLogin: OpenLogin | null;
-    private _keypair: Keypair | null;
+declare const window: TorusWindow;
 
-    constructor(config: TorusWalletAdapterConfig) {
+export class TorusWalletAdapter extends BaseMessageSignerWalletAdapter {
+    private _connecting: boolean;
+    private _torus: Torus | null;
+    private _publicKey: PublicKey | null;
+    private _config: TorusParams;
+
+    constructor(config: TorusParams) {
         super();
-        this._options = { uxMode: 'popup', network: OPENLOGIN_NETWORK.MAINNET, ...config.options };
         this._connecting = false;
-        this._openLogin = null;
-        this._keypair = null;
+        this._torus = null;
+        this._publicKey = null;
+        this._config = config;
+        // if (!this.ready) pollUntilReady(this, config.pollInterval || 1000, config.pollCount || 3);
     }
 
     get publicKey(): PublicKey | null {
-        return this._keypair?.publicKey || null;
+        return this._publicKey;
     }
 
     get ready(): boolean {
-        return typeof window !== 'undefined';
+        return typeof window !== 'undefined' && !!window.torus;
     }
 
     get connecting(): boolean {
@@ -44,65 +53,40 @@ export class TorusWalletAdapter extends BaseSignerWalletAdapter {
     }
 
     get connected(): boolean {
-        return !!this._keypair;
+        return !!this._torus?.isLoggedIn;
     }
 
     async connect(): Promise<void> {
         try {
             if (this.connected || this.connecting) return;
             this._connecting = true;
+            let torus = typeof window !== 'undefined' && window.torus;
 
-            let openLogin: OpenLogin;
-            let privateKey: string;
-            try {
-                openLogin = new OpenLogin(this._options);
+            // check if torus is init, torus.init({config})
+            if (!torus) torus = new Torus();
+            this._torus = torus;
+            if (!this._torus?.isInitialized) await this._torus?.init(this._config);
 
-                await openLogin.init();
-
-                privateKey = openLogin.privKey;
-                if (!privateKey) {
-                    let listener: (event: { reason: any }) => void;
-                    try {
-                        privateKey = await new Promise((resolve, reject) => {
-                            listener = ({ reason }) => {
-                                switch (reason?.message.toLowerCase()) {
-                                    case 'user closed popup':
-                                        reason = new WalletWindowClosedError(reason.message, reason);
-                                        break;
-                                    case 'unable to open window':
-                                        reason = new WalletWindowBlockedError(reason.message, reason);
-                                        break;
-                                }
-                                reject(reason);
-                            };
-
-                            window.addEventListener('unhandledrejection', listener);
-
-                            openLogin.login().then(
-                                // HACK: result.privKey is not padded to 64 bytes, use provider.privKey
-                                (result) => resolve(openLogin.privKey),
-                                (reason) => listener({ reason })
-                            );
-                        });
-                    } finally {
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        window.removeEventListener('unhandledrejection', listener!);
-                    }
+            let login_result;
+            if (!torus?.isLoggedIn) {
+                try {
+                    login_result = await torus?.login();
+                } catch (error: any) {
+                    if (error instanceof WalletError) throw error;
+                    throw new WalletConnectionError(error?.message, error);
                 }
-            } catch (error: any) {
-                if (error instanceof WalletError) throw error;
-                throw new WalletConnectionError(error?.message, error);
             }
+            if (!login_result) throw new WalletConnectionError();
 
-            let keypair: Keypair;
+            let publicKey: PublicKey;
             try {
-                keypair = Keypair.fromSecretKey(getED25519Key(privateKey).sk);
+                publicKey = new PublicKey(login_result[0]);
             } catch (error: any) {
-                throw new WalletKeypairError(error?.message, error);
+                throw new WalletPublicKeyError(error?.message, error);
             }
-
-            this._openLogin = openLogin;
-            this._keypair = keypair;
+            // torus.on('disconnect', this._disconnected);
+            // this._torus = torus;
+            this._publicKey = publicKey;
 
             this.emit('connect');
         } catch (error: any) {
@@ -114,34 +98,30 @@ export class TorusWalletAdapter extends BaseSignerWalletAdapter {
     }
 
     async disconnect(): Promise<void> {
-        const openLogin = this._openLogin;
-        if (openLogin) {
-            this._openLogin = null;
-            this._keypair = null;
-
+        // torus.logout
+        const wallet = this._torus;
+        if (wallet) {
+            this._torus = null;
+            this._publicKey = null;
             try {
-                await openLogin.logout();
-                await openLogin._cleanup();
+                if (wallet.isLoggedIn) await wallet.cleanUp();
             } catch (error: any) {
                 this.emit('error', new WalletDisconnectionError(error?.message, error));
             }
         }
-
         this.emit('disconnect');
     }
 
     async signTransaction(transaction: Transaction): Promise<Transaction> {
         try {
-            const keypair = this._keypair;
-            if (!keypair) throw new WalletNotConnectedError();
+            const wallet = this._torus;
+            if (!wallet) throw new WalletNotConnectedError();
 
             try {
-                transaction.partialSign(keypair);
+                return (await wallet.signTransaction(transaction)) || transaction;
             } catch (error: any) {
                 throw new WalletSignTransactionError(error?.message, error);
             }
-
-            return transaction;
         } catch (error: any) {
             this.emit('error', error);
             throw error;
@@ -150,21 +130,38 @@ export class TorusWalletAdapter extends BaseSignerWalletAdapter {
 
     async signAllTransactions(transactions: Transaction[]): Promise<Transaction[]> {
         try {
-            const keypair = this._keypair;
-            if (!keypair) throw new WalletNotConnectedError();
+            const wallet = this._torus;
+            if (!wallet) throw new WalletNotConnectedError();
 
             try {
-                for (const transaction of transactions) {
-                    transaction.partialSign(keypair);
-                }
+                return (await wallet.signAllTransactions(transactions)) || transactions;
             } catch (error: any) {
                 throw new WalletSignTransactionError(error?.message, error);
             }
-
-            return transactions;
         } catch (error: any) {
             this.emit('error', error);
             throw error;
         }
     }
+
+    async signMessage(message: Uint8Array): Promise<Uint8Array> {
+        try {
+            const wallet = this._torus;
+            if (!wallet) throw new WalletNotConnectedError();
+
+            try {
+                const signature = await wallet.signMessage(message);
+                return Uint8Array.from(signature);
+            } catch (error: any) {
+                throw new WalletSignTransactionError(error?.message, error);
+            }
+        } catch (error: any) {
+            this.emit('error', error);
+            throw error;
+        }
+    }
+
+    private _disconnected = () => {
+        this.disconnect();
+    };
 }

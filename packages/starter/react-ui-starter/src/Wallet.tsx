@@ -26,12 +26,9 @@ export const Wallet: FC = () => {
     const wallets = useMemo(
         () => [
             getPhantomWallet(),
-            getTorusWallet({
-                options: { clientId: 'Get a client ID @ https://developer.tor.us' },
-            }),
-            getCloverWallet(),
             getSlopeWallet(),
             getSolflareWallet(),
+            getTorusWallet(),
             getLedgerWallet(),
             getSolletWallet({ network }),
             getSolletExtensionWallet({ network }),

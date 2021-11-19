@@ -74,20 +74,20 @@ export class TorusWalletAdapter extends BaseSignerWalletAdapter {
             this._torus = torus;
             if (!this._torus?.isInitialized) await this._torus?.init(this._config);
 
-            let login_result;
+            let loginResult;
             if (!torus?.isLoggedIn) {
                 try {
-                    login_result = await torus?.login();
+                    loginResult = await torus?.login();
                 } catch (error: any) {
                     if (error instanceof WalletError) throw error;
                     throw new WalletConnectionError(error?.message, error);
                 }
             }
-            if (!login_result) throw new WalletConnectionError();
+            if (!loginResult) throw new WalletConnectionError();
 
             let publicKey: PublicKey;
             try {
-                publicKey = new PublicKey(login_result[0]);
+                publicKey = new PublicKey(loginResult[0]);
             } catch (error: any) {
                 throw new WalletPublicKeyError(error?.message, error);
             }

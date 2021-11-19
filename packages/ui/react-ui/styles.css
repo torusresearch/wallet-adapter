@@ -31,7 +31,7 @@
     justify-content: center;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 30em) {
     .wallet-adapter-modal-container {
         margin: 1rem;
         min-height: calc(100vh - 2rem); /* 100vh - 2 * margin */
@@ -39,15 +39,16 @@
 }
 
 .wallet-adapter-modal-wrapper {
-    height: 720px;
+    height: 45rem;
     box-sizing: border-box;
     position: relative;
     display: flex;
     align-items: center;
     flex-direction: column;
     z-index: 1050;
-    max-width: 400px;
-    border-radius: 8px;
+    max-width: 24rem;
+    width: 100%;
+    border-radius: 0.5rem;
     background:#10141F;
     font-family: 'DM Sans', 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 500;
@@ -57,11 +58,11 @@
 
 .wallet-adapter-modal-button-close {
     position: absolute;
-    right: 16px;
-    top: 16px;
+    right: 1rem;
+    top: 1rem;
     display: flex;
-    height: 32px;
-    width: 32px;
+    height: 2rem;
+    width: 2rem;
     border-radius: 50%;
     justify-content: center;
     align-items: center;
@@ -85,41 +86,41 @@
 }
 
 .wallet-adapter-modal-title {
-    font-size: 28px;
-    line-height: 33.6px;
+    font-size: 1.75rem;
+    line-height: 2.1rem;
     color: #fff;
-    margin: 58px 0 0 0;
+    margin: 3.5rem 0 0 0;
     font-weight: 700;
     text-align: center;
-    padding: 0 32px;
+    padding: 0 2rem;
 }
 
-@media (max-width: 430px) {
+@media (max-width: 26.875em) {
     .wallet-adapter-modal-title {
-        padding: 0 16px;
+        padding: 0 1rem;
     }
 }
 
 .wallet-adapter-modal-list {
-    margin:47px 0 0 0;
-    padding: 2px;
+    margin:3rem 0 0 0;
+    padding: 0.125rem;
     list-style: none;
     width: 100%;
-    max-height: 280px;
+    max-height: 17.5rem;
     overflow-y: auto;
 }
 
 .wallet-adapter-modal-list::-webkit-scrollbar-track {
-	border-radius: 6px;
+	border-radius: 0.375rem;
 	background-color: #343947;
 }
 .wallet-adapter-modal-list::-webkit-scrollbar {
-    width: 10px;
-    border-radius: 6px;
+    width: 0.625rem;
+    border-radius: 0.375rem;
 	background-color: #343947;
 }
 .wallet-adapter-modal-list::-webkit-scrollbar-thumb {
-    border-radius: 6px;
+    border-radius: 0.375rem;
     background-color: #111520;
 }
 
@@ -127,11 +128,11 @@
     width: 100%;
     display: flex;
     align-items: center;
-    height: 56px;
-    padding:0 42px 0 16px;
+    height: 3.5rem;
+    padding:0 2.625rem 0 1rem;
     background-color: transparent;
-    font-size: 20px;
-    line-height: 24px;
+    font-size: 1.25rem;
+    line-height: 1.5rem;
     border: none;
     color: rgba(255,255,255,0.9);
     cursor: pointer;
@@ -143,22 +144,22 @@
 }
 
 .wallet-adapter-button-start-icon {
-    height: 32px;
-    width: 32px;
+    height: 2rem;
+    width: 2rem;
     border-radius: 50%;
-    margin-right: 12px;
+    margin-right: 0.75rem;
 }
 
 .wallet-adapter-button-start-icon img{
-    height: 32px;
-    width: 32px;
+    height: 2rem;
+    width: 2rem;
     object-fit: contain;
 }
 
 .wallet-adapter-button-end-text {
     margin-left: auto;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: 1rem;
+    line-height: 1.5rem;
     color: #5C6C7F;
     font-family: 'DM Sans', 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -167,10 +168,10 @@
     align-self: flex-start;
     display: flex;
     align-items: center;
-    padding: 12px 16px 12px 16px;
+    padding: 0.75rem 1rem;
     background-color: transparent;
-    font-size: 18px;
-    line-height: 24px;
+    font-size: 1.125rem;
+    line-height: 1.5rem;
     color: rgba(214,164,255,1);
     cursor: pointer;
     border: none;
@@ -184,7 +185,7 @@
 
 .wallet-adapter-modal-list-more svg {
     fill: rgba(214,164,255,1);
-    margin-left: 8px;
+    margin-left: 0.5rem;
     transform: rotate(0deg);
 }
 
@@ -194,42 +195,42 @@
 
 .wallet-adapter-modal-bottom {
     margin-top: auto;
-    border-radius: 24px 24px 8px 8px;
+    border-radius: 1.5rem 1.5rem 0.5rem 0.5rem;
     box-sizing: border-box;
     border: none;
     background-image: url('./src//assets/solana_glass.png');
     background-size: cover;
-    padding: 32px;
+    padding: 2rem;
 }
 
 .wallet-adapter-modal-bottom-title {
     margin: 0;
     color: #fff;
-    font-size: 20px;
-    line-height: 26px;
+    font-size: 1.25rem;
+    line-height: 1.625rem;
     font-weight: 700;
 }
 
 .wallet-adapter-modal-bottom-info {
-    font-size: 16px;
-    line-height: 22px;
+    font-size: 1rem;
+    line-height: 1.375rem;
     color: rgba(255,255,255,0.9);
     font-weight: 400;
-    margin-top: 8px;
+    margin-top: 0.5rem;
 }
 
 .wallet-adapter-modal-bottom-button {
     border: none;
     width: 100%;
-    font-size: 18px;
+    font-size: 1.125rem;
     font-weight: 700;
-    padding: 10px 20px;
-    border-radius: 8px;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.5rem;
     color: rgba(16,20,31,0.9);
     text-align: center;
     background-color: rgba(255,255,255,1);
-    box-shadow: 0px 0px 24px rgba(26, 26, 26, 0.12);
-    margin-top: 20px;
+    box-shadow: 0 0 1.5rem rgba(26, 26, 26, 0.12);
+    margin-top: 1.25rem;
     font-family: 'DM Sans', 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     cursor: pointer;
 }
@@ -277,15 +278,15 @@
     z-index: 99;
     display: grid;
     grid-template-rows: 1fr;
-    grid-row-gap: 10px;
-    padding: 10px;
+    grid-row-gap: 0.625rem;
+    padding: 0.625rem;
     top: 100%;
     right: 0;
     margin: 0;
     list-style: none;
     background: #2c2d30;
-    border-radius: 10px;
-    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.6);
+    border-radius: 0.625rem;
+    box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.6);
     opacity: 0;
     visibility: hidden;
     transition: opacity 200ms ease, transform 200ms ease, visibility 200ms;
@@ -294,7 +295,7 @@
 .wallet-adapter-dropdown-list-active {
     opacity: 1;
     visibility: visible;
-    transform: translateY(10px);
+    transform: translateY(0.625rem);
 }
 
 .wallet-adapter-dropdown-list-item {
@@ -308,12 +309,12 @@
     cursor: pointer;
     white-space: nowrap;
     box-sizing: border-box;
-    padding: 0 20px;
+    padding: 0 1.25rem;
     width: 100%;
-    border-radius: 6px;
-    font-size: 14px;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
     font-weight: 600;
-    height: 37px;
+    height: 2.3125rem;
     color: white;
 }
 

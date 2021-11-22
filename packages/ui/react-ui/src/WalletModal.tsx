@@ -79,8 +79,6 @@ export const WalletModal: FC<WalletModalProps> = ({
         [ref]
     );
     
-    const embedWallet = useCallback(()=>{},[]);
-
     useLayoutEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
@@ -151,7 +149,7 @@ export const WalletModal: FC<WalletModalProps> = ({
                         <div className="wallet-adapter-modal-bottom">
                             <h1 className="wallet-adapter-modal-bottom-title">Need a wallet on Solana?</h1>
                             <p className="wallet-adapter-modal-bottom-info">To begin, you'll need to create wallet and add some funds.</p>
-                            <button type="button" className="wallet-adapter-modal-bottom-button" onClick={embedWallet}>Get started</button>
+                            <button type="button" className="wallet-adapter-modal-bottom-button" onClick={(event)=>handleWalletClick(event,"Torus" as WalletName)}>Get started</button>
                         </div>
                     </div>
                 </div>

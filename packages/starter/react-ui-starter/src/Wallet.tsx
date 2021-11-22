@@ -9,7 +9,6 @@ import {
     getSolletExtensionWallet,
     getSolletWallet,
     getTorusWallet,
-    getCloverWallet
 } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
 import React, { FC, useCallback, useMemo } from 'react';
@@ -26,11 +25,11 @@ export const Wallet: FC = () => {
     const wallets = useMemo(
         () => [
             getPhantomWallet(),
+            getTorusWallet(),
+            getSolletWallet({ network }),
             getSlopeWallet(),
             getSolflareWallet(),
-            getTorusWallet(),
             getLedgerWallet(),
-            getSolletWallet({ network }),
             getSolletExtensionWallet({ network }),
         ],
         [network]

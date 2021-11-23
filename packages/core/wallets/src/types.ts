@@ -27,5 +27,5 @@ export interface Wallet {
     url: string;
     icon: string;
     adapter: () => WalletAdapter | SignerWalletAdapter | MessageSignerWalletAdapter;
-    detected?: boolean;
+    detected?: () => boolean | undefined;
 }

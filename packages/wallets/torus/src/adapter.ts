@@ -62,6 +62,27 @@ export class TorusWalletAdapter extends BaseSignerWalletAdapter {
         return !!this._torus?.isLoggedIn;
     }
 
+    async preload(): Promise<void> {
+        try {
+            if (this.connected || this.connecting) return;
+            this._connecting = true;
+
+            // Check if torus is initialized, torus.init({config})
+            let torus = typeof window !== 'undefined' && window.torus;
+            if (!torus) torus = new Torus();
+            window.torus = torus;
+            if (!torus.isInitialized) await torus.init(this._config);
+            torus.hideTorusButton();
+            this._torus = torus;
+            this.emit('connect');
+        } catch (error: any) {
+            this.emit('error', error);
+            throw error;
+        } finally {
+            this._connecting = false;
+        }
+    }
+
     async connect(): Promise<void> {
         try {
             if (this.connected || this.connecting) return;
@@ -90,7 +111,7 @@ export class TorusWalletAdapter extends BaseSignerWalletAdapter {
             } catch (error: any) {
                 throw new WalletPublicKeyError(error?.message, error);
             }
-
+            torus.showTorusButton();
             this._torus = torus;
             this._publicKey = publicKey;
             this.emit('connect');
@@ -106,11 +127,10 @@ export class TorusWalletAdapter extends BaseSignerWalletAdapter {
         // torus.logout
         const wallet = this._torus;
         if (wallet) {
-            window.torus = null
-            this._torus = null;
             this._publicKey = null;
             try {
-                if (wallet.isLoggedIn) await wallet.cleanUp();
+                if (wallet.isLoggedIn) await wallet.logout();
+                wallet.hideTorusButton();
             } catch (error: any) {
                 this.emit('error', new WalletDisconnectionError(error?.message, error));
             }

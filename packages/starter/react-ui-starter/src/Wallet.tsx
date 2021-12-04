@@ -26,9 +26,9 @@ export const Wallet: FC = () => {
         () => [
             getTorusWallet(),
             getPhantomWallet(),
+            getSolflareWallet(),
             getSolletWallet({ network }),
             getSlopeWallet(),
-            getSolflareWallet(),
             getLedgerWallet(),
             getSolletExtensionWallet({ network }),
         ],

@@ -20,7 +20,7 @@ import { PublicKey, Transaction, Message, Cluster } from '@solana/web3.js';
 import Torus, { TorusParams } from '@toruslabs/solana-embed';
 
 export interface TorusWalletAdapterConfig {
-    torusParams?: TorusParams;
+    params?: TorusParams;
     pollInterval?: number;
     pollCount?: number;
 }
@@ -34,14 +34,14 @@ export class TorusWalletAdapter extends BaseSignerWalletAdapter {
     private _connecting: boolean;
     private _torus: Torus | null;
     private _publicKey: PublicKey | null;
-    private _config: TorusParams;
+    private _params: TorusParams;
 
     constructor(config: TorusWalletAdapterConfig) {
         super();
         this._connecting = false;
         this._torus = null;
         this._publicKey = null;
-        this._config = config.torusParams || {};
+        this._params = config.params || {};
     }
 
     get publicKey(): PublicKey | null {
@@ -71,7 +71,7 @@ export class TorusWalletAdapter extends BaseSignerWalletAdapter {
             let torus = window.torus;
             if (!torus) torus = new Torus();
             window.torus = torus;
-            if (!torus.isInitialized) await torus.init(this._config);
+            if (!torus.isInitialized) await torus.init(this._params);
 
             // Login
             let loginResult;

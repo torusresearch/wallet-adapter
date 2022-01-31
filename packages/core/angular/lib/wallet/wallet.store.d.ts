@@ -1,0 +1,44 @@
+import { ComponentStore } from '@ngrx/component-store';
+import { Adapter, SendTransactionOptions, Wallet, WalletName } from '@solana/wallet-adapter-base';
+import { Connection, PublicKey, Transaction } from '@solana/web3.js';
+import { Observable } from 'rxjs';
+import { WalletConfig, WalletState } from './wallet.types';
+import * as i0 from "@angular/core";
+export declare const WALLET_DEFAULT_CONFIG: WalletConfig;
+export declare class WalletStore extends ComponentStore<WalletState> {
+    private _config;
+    private readonly _error;
+    private readonly _localStorage;
+    readonly wallets$: Observable<Wallet[]>;
+    readonly autoConnect$: Observable<boolean>;
+    readonly wallet$: Observable<Wallet | null>;
+    readonly adapter$: Observable<Adapter | null>;
+    readonly publicKey$: Observable<PublicKey | null>;
+    readonly ready$: Observable<boolean>;
+    readonly connecting$: Observable<boolean>;
+    readonly disconnecting$: Observable<boolean>;
+    readonly connected$: Observable<boolean>;
+    readonly name$: Observable<WalletName | null>;
+    readonly error$: Observable<unknown>;
+    readonly anchorWallet$: Observable<{
+        publicKey: PublicKey;
+        signTransaction: (transaction: Transaction) => Promise<Transaction>;
+        signAllTransactions: (transactions: Transaction[]) => Promise<Transaction[]>;
+    } | undefined>;
+    private readonly _walletsByName$;
+    constructor(_config: WalletConfig);
+    readonly onWalletChanged: () => void;
+    readonly autoConnect: () => void;
+    readonly selectWallet: (observableOrValue: WalletName | Observable<WalletName | null> | null) => import("rxjs").Subscription;
+    readonly onConnect: () => void;
+    readonly onDisconnect: () => void;
+    readonly onError: () => void;
+    connect(): Observable<void>;
+    disconnect(): Observable<void>;
+    sendTransaction(transaction: Transaction, connection: Connection, options?: SendTransactionOptions): Observable<string>;
+    signTransaction(transaction: Transaction): Observable<Transaction> | undefined;
+    signAllTransactions(transactions: Transaction[]): Observable<Transaction[]> | undefined;
+    signMessage(message: Uint8Array): Observable<Uint8Array> | undefined;
+    static ɵfac: i0.ɵɵFactoryDeclaration<WalletStore, [{ optional: true; }]>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<WalletStore>;
+}

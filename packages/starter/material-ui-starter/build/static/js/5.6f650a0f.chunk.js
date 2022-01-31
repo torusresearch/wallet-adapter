@@ -1,0 +1,2 @@
+(this["webpackJsonp@solana/wallet-adapter-material-ui-starter"]=this["webpackJsonp@solana/wallet-adapter-material-ui-starter"]||[]).push([[5],{423:function(n,t){},425:function(n,t){},437:function(n,t){},439:function(n,t){},448:function(n,t){},451:function(n,t){},457:function(n,t){},464:function(n,t){},466:function(n,t){},480:function(n,t){},482:function(n,t){},510:function(n,t){}}]);
+//# sourceMappingURL=5.6f650a0f.chunk.js.map
